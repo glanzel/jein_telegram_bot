@@ -1,0 +1,3 @@
+dbname = "telegram_bot"
+dbuser = "a_user"
+dbpassword = "a_password"
