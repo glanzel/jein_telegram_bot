@@ -17,12 +17,7 @@ from sqlalchemy import func
 from base import Session, Base
 from reactions import Reactions
 
-buttonstext = ['yes', 'no', 'err', 'meToo']
-buttons = [        [InlineKeyboardButton("yes", callback_data="0"),
-     InlineKeyboardButton("no", callback_data="1"),
-     InlineKeyboardButton("err", callback_data="2"),
-     InlineKeyboardButton("meToo", callback_data="3")]
-]
+buttonstext = ['\U0001F44D', '\U0001F44E', '\U0001F914', '\U00002795']
 
 
 @app.on_message(filters.private)
@@ -30,19 +25,18 @@ async def hello(client, message):
     print(app.get_me())
     await message.reply_text(f"Hello {message.from_user.mention}")
 
-def createButtons(message_id):
-    buttons[message_id] = [[InlineKeyboardButton("yes", callback_data="0"),
-        InlineKeyboardButton("no", callback_data="1"),
-        InlineKeyboardButton("err", callback_data="2"),
-        InlineKeyboardButton("meToo", callback_data="3"),]
+def createButtons():
+    buttons = [        [InlineKeyboardButton("\U0001F44D", callback_data="0"),
+        InlineKeyboardButton("\U0001F44E", callback_data="1"),
+        InlineKeyboardButton("\U0001F914", callback_data="2"),
+        InlineKeyboardButton("\U00002795", callback_data="3")]
     ]
     return buttons
 
 @app.on_inline_query()
 async def inline(client, inlineQuery):
     query = inlineQuery.query
-    print(buttons)
-    the_reply_markup = InlineKeyboardMarkup(buttons)
+    the_reply_markup = InlineKeyboardMarkup(createButtons())
     resultArticle = InlineQueryResultArticle(
         title="post with ja nein buttons",
         input_message_content=InputTextMessageContent(message_text=query),
@@ -67,25 +61,23 @@ def button(client, callbackQuery):
     
     #save reaction
     session = Session()
-    your_reactions = session.query(Reactions).filter(Reactions.message_id == query.inline_message_id, Reactions.user == username, Reactions.value == button_no).all()
+    your_reactions = session.query(Reactions).filter(Reactions.message_id == query.inline_message_id, Reactions.user == username).all()
     print(your_reactions)
     if not your_reactions:
         reaction = Reactions(message_id=query.inline_message_id, value=button_no, user=username)
         session.add(reaction)
     else:
         for yr in your_reactions:
-            session.delete(yr)
+            if int(yr.value) == int(button_no): 
+                session.delete(yr)
+            else: 
+                yr.value = button_no
+                #session.add(yr)
     session.commit()
     session.close()
 
-    cb_buttons = [[InlineKeyboardButton("yes", callback_data="0"),
-        InlineKeyboardButton("no", callback_data="1"),
-        InlineKeyboardButton("err", callback_data="2"),
-        InlineKeyboardButton("meToo", callback_data="3")]
-    ]
-    
-    print("cb_buttonss == buttons")
-    print(cb_buttons == buttons)
+    cb_buttons = createButtons()
+
     #read reactions
     select = session.query(Reactions.value, func.count(Reactions.value)).filter(Reactions.message_id== query.inline_message_id).group_by(Reactions.value).all()
     
@@ -94,7 +86,6 @@ def button(client, callbackQuery):
             button_number = int(tup[0])
             button_count = str(tup[1])
             cb_buttons[0][button_number] = InlineKeyboardButton(buttonstext[button_number] + " + " + button_count, callback_data= str(button_number))
-    print(buttons)
 
     client.edit_inline_reply_markup(
     query.inline_message_id,
