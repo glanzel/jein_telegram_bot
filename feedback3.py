@@ -136,7 +136,7 @@ def button(update, context):
 
 def main():
     # Create the Updater and pass it your bot's token.
-    updater = Updater("BOT_TOKEN", use_context=True)
+    updater = Updater("1384153335:AAHdPY1IeGbtvjYzl_U6aIdOg_oPYoXoFE8", use_context=True)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher

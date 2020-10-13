@@ -1,7 +1,7 @@
 import telebot
 from telebot import types
 
-bot = telebot.TeleBot("BOT_TOKEN")
+bot = telebot.TeleBot("1384153335:AAHdPY1IeGbtvjYzl_U6aIdOg_oPYoXoFE8")
 
 # Using the ReplyKeyboardMarkup class
 # It's constructor can take the following optional arguments:
