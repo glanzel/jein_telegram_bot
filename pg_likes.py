@@ -98,7 +98,7 @@ def button(client, callbackQuery):
             print(selectVotes)
             ergStr = ""
             for reaction in selectVotes:
-                ergStr = str(reaction.user)+ " : " + buttonstext[int(reaction.value)]
+                ergStr += str(reaction.user)+ " : " + buttonstext[int(reaction.value)]
             cb_buttons[1][0] = InlineKeyboardButton(ergStr, callback_data="98")
         else: del cb_buttons[1]
 
