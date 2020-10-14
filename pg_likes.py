@@ -29,7 +29,8 @@ def createButtons():
     buttons = [        [InlineKeyboardButton("\U0001F44D", callback_data="0"),
         InlineKeyboardButton("\U0001F44E", callback_data="1"),
         InlineKeyboardButton("\U0001F914", callback_data="2"),
-        InlineKeyboardButton("\U00002795", callback_data="3")]
+        InlineKeyboardButton("\U00002795", callback_data="3"),
+        InlineKeyboardButton("#", callback_data="99")]                        
     ]
     return buttons
 
@@ -58,23 +59,25 @@ def button(client, callbackQuery):
     print(query.inline_message_id)
     print(query.id)
     print(query.__dict__)
+
+    session = Session()
     
     #save reaction
-    session = Session()
-    your_reactions = session.query(Reactions).filter(Reactions.message_id == query.inline_message_id, Reactions.user == username).all()
-    print(your_reactions)
-    if not your_reactions:
-        reaction = Reactions(message_id=query.inline_message_id, value=button_no, user=username)
-        session.add(reaction)
-    else:
-        for yr in your_reactions:
-            if int(yr.value) == int(button_no): 
-                session.delete(yr)
-            else: 
-                yr.value = button_no
-                #session.add(yr)
-    session.commit()
-    session.close()
+    if button_no < 98:
+        your_reactions = session.query(Reactions).filter(Reactions.message_id == query.inline_message_id, Reactions.user == username).all()
+        print(your_reactions)
+        if not your_reactions:
+            reaction = Reactions(message_id=query.inline_message_id, value=button_no, user=username)
+            session.add(reaction)
+        else:
+            for yr in your_reactions:
+                if int(yr.value) == int(button_no): 
+                    session.delete(yr)
+                else: 
+                    yr.value = button_no
+                    #session.add(yr)
+        session.commit()
+        session.close()
 
     cb_buttons = createButtons()
 
@@ -86,6 +89,23 @@ def button(client, callbackQuery):
             button_number = int(tup[0])
             button_count = str(tup[1])
             cb_buttons[0][button_number] = InlineKeyboardButton(buttonstext[button_number] + " + " + button_count, callback_data= str(button_number))
+
+    if button_no == 99:
+        if 1 not in cb_buttons:
+            cb_buttons.append([None]) 
+            selectVotes = session.query(Reactions).filter(Reactions.message_id== query.inline_message_id).all()
+            print("selectVotes")
+            print(selectVotes)
+            ergStr = ""
+            for reaction in selectVotes:
+                ergStr = reaction.user+ " : " + buttonstext[int(reaction.value)]
+            cb_buttons[1][0] = InlineKeyboardButton(ergStr, callback_data="98")
+        else: del cb_buttons[1]
+
+    
+    if button_no == 98:
+        if 1 in cb_buttons:
+            del cb_buttons[1]
 
     client.edit_inline_reply_markup(
     query.inline_message_id,
