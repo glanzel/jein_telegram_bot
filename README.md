@@ -1,6 +1,6 @@
 # jein_telegram_bot
 
-a. use english
+a. use
 1. in a group conversation type: @jein_bot your message
 2. you then get 4 buttons where everyone in the group can give easy feedback to your message
 3. try it out it work in privte chats aswell but makes more sense in group chats
