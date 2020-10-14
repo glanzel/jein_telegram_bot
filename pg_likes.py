@@ -47,6 +47,15 @@ async def inline(client, inlineQuery):
 
     await inlineQuery.answer(results)
 
+def getUsername(user):
+    if user.username is not None:
+        return user.username
+    elif user.first_name is not None:
+        return user.first_name
+    else: return user.id
+        
+
+
 @app.on_callback_query()    
 def button(client, callbackQuery):
     """Show new choice of buttons"""
@@ -55,7 +64,7 @@ def button(client, callbackQuery):
 
     #reply_markup = query.message.reply_markup
     button_no = int(query.data)
-    username = query.from_user.username
+    username = getUsername(query.from_user)
     print(query.inline_message_id)
     print(query.id)
     print(query.__dict__)
